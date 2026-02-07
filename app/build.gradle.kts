@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    // Добавляем плагин для работы с JSON (Serialization)
-    // Если будет ошибка версии, попробуй поменять 1.9.0 на версию твоего Kotlin (см. в libs.versions.toml)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.0"
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.weatherapp"
-    compileSdk = 36 // Я поменял на 34 (стабильная), так как 36 может быть нестабильной (Preview). Если нужно 36 - верни.
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.weatherapp"
@@ -48,6 +47,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,7 +56,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // --- НОВЫE БИБЛИОТЕКИ (ДЛЯ ЗАДАНИЯ) ---
 
     // 1. Сеть (Retrofit + OkHttp)
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
@@ -74,4 +73,14 @@ dependencies {
 
     // 5. ViewModel для Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
+
+    // Библиотека для Realtime Database (как в задании [cite: 32])
+    implementation("com.google.firebase:firebase-database")
+
+// Аналитика (стандартная библиотека, часто добавляется по умолчанию)
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
 }
