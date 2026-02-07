@@ -12,13 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherapp.viewmodel.WeatherViewModel
+import com.example.weatherapp.ui.viewmodel.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
 
-    // Получаем данные из ViewModel
+    // ViewModel
     val searchText = viewModel.cityQuery
     val searchResults = viewModel.searchResults
     val weatherData = viewModel.weatherData
@@ -36,29 +36,29 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // --- 1. ПОИСК [Requirement: Search] ---
+            // --- 1. Requirement: Search ---
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { viewModel.cityQuery = it },
-                    label = { Text("Введите город") },
+                    label = { Text("Enter the city") },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = { viewModel.searchCity() }) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "Поиск")
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
                 }
             }
 
-            // --- 2. ИНДИКАТОР ЗАГРУЗКИ ---
+            // --- 2. LOADING INDICATOR ---
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            // --- 3. ОШИБКА ---
+            // --- 3. ERROR ---
             if (errorMessage != null) {
                 Text(
                     text = errorMessage,
@@ -67,7 +67,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 )
             }
 
-            // --- 4. СПИСОК ГОРОДОВ (Результаты поиска) ---
+            // --- 4. Search Results ---
             if (searchResults.isNotEmpty()) {
                 LazyColumn(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     items(searchResults) { city ->
@@ -75,7 +75,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .clickable { viewModel.loadWeather(city) }, // При клике грузим погоду
+                                .clickable { viewModel.loadWeather(city) }, // When you click, we upload the weather
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
@@ -87,8 +87,8 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                 }
             }
 
-            // --- 5. ОТОБРАЖЕНИЕ ПОГОДЫ [Requirement: Weather screen] ---
-            // Показываем только если выбрали город и данные загрузились
+            // --- 5. Requirement: Weather screen ---
+            // We only show it if we have selected a city and the data has loaded
             weatherData?.let { weather ->
                 Spacer(modifier = Modifier.height(24.dp))
                 Card(
@@ -96,6 +96,12 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
+
+                        Text(
+                            text = viewModel.currentCityName,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         if (viewModel.isOffline) {
                             Text(
@@ -118,22 +124,19 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
 
                         Text(text = "wind: ${weather.currentWeather.windSpeed} km/h")
 
-                        // Если есть прогноз (Daily)
-// --- НАЧАЛО ЗАМЕНЫ ---
+                        // If there is a forecast (Daily)
                         if (weather.daily != null) {
                             Spacer(modifier = Modifier.height(24.dp))
                             Text(
-                                text = "Прогноз на 7 дней",
+                                text = "7-day forecast",
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Горизонтальный список
                             androidx.compose.foundation.lazy.LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 val daily = weather.daily
-                                // Open-Meteo возвращает списки (time, max, min). Проходимся по ним по индексу.
                                 items(daily.time.size) { index ->
                                     Card(
                                         colors = CardDefaults.cardColors(
@@ -145,18 +148,18 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                                             modifier = Modifier.padding(8.dp),
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
-                                            // Дата (просто обрезаем лишнее, чтобы было короче)
+                                            // data
                                             Text(
                                                 text = daily.time[index].takeLast(5), // "2023-10-15" -> "10-15"
                                                 style = MaterialTheme.typography.labelMedium
                                             )
                                             Spacer(modifier = Modifier.height(4.dp))
-                                            // Макс темп
+                                            // Max temp
                                             Text(
                                                 text = "${daily.maxTemp.getOrElse(index) { 0.0 }}°",
                                                 style = MaterialTheme.typography.titleLarge
                                             )
-                                            // Мин темп
+                                            // min temp
                                             Text(
                                                 text = "${daily.minTemp.getOrElse(index) { 0.0 }}°",
                                                 style = MaterialTheme.typography.bodySmall,
@@ -167,7 +170,7 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
                                 }
                             }
                         }
-                    }    // --- КОНЕЦ ЗАМЕНЫ ---
+                    }
                 }
             }
         }

@@ -8,12 +8,12 @@ import retrofit2.Retrofit
 object RetrofitClient {
     private const val BASE_URL = "https://api.open-meteo.com/v1/"
 
-    // Настройка JSON парсера (чтобы он игнорировал неизвестные поля и не падал)
+    // Configuring the JSON
     private val json = Json {
         ignoreUnknownKeys = true
     }
 
-    // Создаем сам Retrofit
+    // Create Retrofit
     val api: WeatherApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

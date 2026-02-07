@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-// Это расширение создает единое хранилище "weather_cache" для всего приложения
 private val Context.dataStore by preferencesDataStore("weather_cache")
 
 class WeatherCache(private val context: Context) {
     private val KEY_WEATHER = stringPreferencesKey("last_weather_json")
 
-    // 1. Сохранить погоду (Превращаем объект в JSON-строку)
+    // 1. Save the weather
+    private val KEY_CITY_NAME = stringPreferencesKey("last_city_name")
     suspend fun saveWeather(weather: WeatherResponse) {
         val jsonString = Json.encodeToString(weather)
         context.dataStore.edit { prefs ->
@@ -23,7 +23,7 @@ class WeatherCache(private val context: Context) {
         }
     }
 
-    // 2. Достать погоду (Превращаем JSON-строку обратно в объект)
+    // 2. Get the weather
     suspend fun getLastWeather(): WeatherResponse? {
         val prefs = context.dataStore.data.first()
         val jsonString = prefs[KEY_WEATHER]
@@ -36,5 +36,16 @@ class WeatherCache(private val context: Context) {
         } else {
             null
         }
+    }
+
+    suspend fun saveCityName(name: String) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_CITY_NAME] = name
+        }
+    }
+
+    suspend fun getLastCityName(): String? {
+        val prefs = context.dataStore.data.first()
+        return prefs[KEY_CITY_NAME]
     }
 }

@@ -7,8 +7,7 @@ import retrofit2.http.Query
 
 interface WeatherApi {
 
-    // 1. Поиск города
-    // Используем полный URL, так как у Open-Meteo поиск на другом поддомене
+    // 1. City Search
     @GET("https://geocoding-api.open-meteo.com/v1/search")
     suspend fun searchCity(
         @Query("name") query: String,
@@ -17,14 +16,13 @@ interface WeatherApi {
         @Query("format") format: String = "json"
     ): GeocodingResponse
 
-    // 2. Получение погоды
-    // Base URL будет https://api.open-meteo.com/v1/
+    // 2. Getting the weather
     @GET("forecast")
     suspend fun getWeather(
         @Query("latitude") lat: Double,
         @Query("longitude") long: Double,
         @Query("current_weather") current: Boolean = true,
-        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min", // Запрашиваем макс/мин температуру
+        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min",
         @Query("timezone") timezone: String = "auto"
     ): WeatherResponse
 }

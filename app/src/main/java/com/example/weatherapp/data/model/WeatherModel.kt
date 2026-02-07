@@ -3,7 +3,7 @@ package com.example.weatherapp.data.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// --- 1. Модель для ПОИСКА ГОРОДА (Geocoding API) ---
+// --- 1. A model for SEARCHING FOR A CITY (Geocoding API) ---
 @Serializable
 data class GeocodingResponse(
     @SerialName("results") val results: List<CityDto>? = null
@@ -18,7 +18,7 @@ data class CityDto(
     @SerialName("timezone") val timezone: String? = null
 )
 
-// --- 2. Модель для ПОГОДЫ (Weather API) ---
+// --- 2. A model for the WEATHER (Weather API) ---
 @Serializable
 data class WeatherResponse(
     @SerialName("current_weather") val currentWeather: CurrentWeatherDto,

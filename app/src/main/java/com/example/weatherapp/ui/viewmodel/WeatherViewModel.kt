@@ -1,4 +1,4 @@
-package com.example.weatherapp.viewmodel
+package com.example.weatherapp.ui.viewmodel
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -71,6 +71,30 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             } catch (e: Exception) {
                 errorMessage = "No internet connection and no saved data"
             } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun onFavoriteCitySelected(cityName: String) {
+        viewModelScope.launch {
+            isLoading = true
+            cityQuery = cityName // Обновляем текст в поиске
+
+            try {
+                // 1. Сначала ищем координаты города по названию
+                val results = repository.searchCity(cityName)
+
+                if (results.isNotEmpty()) {
+                    // 2. Если нашли - берем первый город из списка и грузим погоду
+                    val cityDto = results.first()
+                    loadWeather(cityDto)
+                } else {
+                    errorMessage = "City not found in API"
+                    isLoading = false
+                }
+            } catch (e: Exception) {
+                errorMessage = "Failed to load favorite city"
                 isLoading = false
             }
         }
