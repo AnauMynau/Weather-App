@@ -1,4 +1,4 @@
-package com.example.weatherapp.viewmodel
+package com.example.weatherapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +15,7 @@ class FavoritesViewModel : ViewModel() {
     private val repository = FavoritesRepository()
     private val auth = FirebaseAuth.getInstance()
 
-    // State: Список городов, который будет наблюдать UI
+    // Список городов, который будет наблюдать UI
     private val _favorites = MutableStateFlow<List<FavoriteCity>>(emptyList())
     val favorites: StateFlow<List<FavoriteCity>> = _favorites.asStateFlow()
 
